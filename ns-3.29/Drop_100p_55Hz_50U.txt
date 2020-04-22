@@ -1,0 +1,2 @@
+collisions_MacTxDrop collisions_PhyTxDrop collisions_PhyRxDrop collisions_MacRxDrop MsgCount
+0 0 1954343 0 348500
