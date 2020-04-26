@@ -19,7 +19,7 @@
  *
  */
 
-/*
+/*/* 
  * This example program allows one to run vehicular ad hoc
  * network (VANET) simulation scenarios in ns-3 to assess
  * performance by evaluating different 802.11p MAC/PHY

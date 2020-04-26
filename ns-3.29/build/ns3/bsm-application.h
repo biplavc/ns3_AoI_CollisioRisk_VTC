@@ -135,8 +135,13 @@ private:
    * \param rxNode the receiving node
    * \return none
    */
-  void HandleReceivedBsmPacket (Ptr<Node> txNode,
-                                Ptr<Node> rxNode);
+  // void HandleReceivedBsmPacket (Ptr<Node> txNode, //BIPLAV
+  //                               Ptr<Node> rxNode);
+
+    void HandleReceivedBsmPacket (Ptr<Node> txNode,
+                                              Ptr<Node> rxNode,
+                                              Ptr<Packet> packet,
+                                              Ptr<Socket> socket);
 
   /**
    * \brief Get the node for the desired id
