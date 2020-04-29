@@ -120,6 +120,8 @@
 #include "ns3/wave-bsm-helper.h"
 #include "ns3/wave-helper.h"
 #include "ns3/yans-wifi-helper.h"
+#include "ns3/netanim-module.h"
+
 
 using namespace ns3;
 using namespace dsr;
@@ -526,7 +528,7 @@ RoutingHelper::Install (NodeContainer & c,
                         int routingTables)
 {
   m_TotalSimTime = totalTime;
-  m_protocol = protocol;
+  m_protocol = 0; //biplav
   m_nSinks = nSinks;
   m_routingTables = routingTables;
 
@@ -1533,7 +1535,7 @@ static ns3::GlobalValue g_phyMode ("VRCphyMode",
                                    ns3::MakeStringChecker ());
 static ns3::GlobalValue g_traceFile ("VRCtraceFile",
                                      "Mobility trace filename",
-                                     ns3::StringValue ("./src/wave/examples/low99-ct-unterstrass-1day.filt.7.adj.mob"),
+                                     ns3::StringValue ("/home/biplav/mobility_files/circle_50U.tcl";), //biplav
                                      ns3::MakeStringChecker ());
 static ns3::GlobalValue g_logFile ("VRClogFile",
                                    "Log filename",
@@ -2388,7 +2390,8 @@ VanetRoutingExperiment::SetupScenario ()
     {
       // Realistic vehicular trace in 4.6 km x 3.0 km suburban Zurich
       // "low density, 99 total vehicles"
-      m_traceFile = "src/wave/examples/low99-ct-unterstrass-1day.filt.7.adj.mob";
+      // m_traceFile = "src/wave/examples/low99-ct-unterstrass-1day.filt.7.adj.mob";
+      m_traceFile = "/home/biplav/mobility_files/circle_50U.tcl"; // biplav
       m_logFile = "low99-ct-unterstrass-1day.filt.7.adj.log";
       m_mobility = 1;
       m_nNodes = 99;
@@ -2447,9 +2450,27 @@ VanetRoutingExperiment::WriteCsvHeader ()
   out2.close ();
 }
 
+// void LogLocation (int i, Time LogInterval)
+
+// {
+//     Ptr<Node> Current_Node = NodeList::GetNode(i);
+//     Ptr<MobilityModel> mobility = Current_Node->GetObject<MobilityModel>();
+//     Vector pos = mobility->GetPosition (); // Get position
+//     Vector vel = mobility->GetVelocity (); // Get velocity
+//     // int ID = mobility->GetObject<ns3::Node>()->GetId(); // Get Node ID
+//     // while ((Simulator::Now())> Seconds(173))
+//     std::cerr<<Simulator::Now().GetInteger()<<" "<<i<<" "<<pos.x<<" "<< pos.y<<" "<< vel.x<<" "<< vel.y<<std::endl;
+//     // Simulator::Schedule(LogInterval, LogLocation, i, LogInterval);
+// }
+
+
+
+
 int
 main (int argc, char *argv[])
 {
   VanetRoutingExperiment experiment;
   experiment.Simulate (argc, argv);
+ 
+
 }

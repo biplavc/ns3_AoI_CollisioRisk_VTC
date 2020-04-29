@@ -104,8 +104,8 @@ int main (int argc, char *argv[])
 
   ns3::Time::SetResolution (Time::MS);
 
-  int nodeNum=99;
-  double duration=12; // see important.txt on sumo folder
+  int nodeNum=50;
+  double duration=188; // see important.txt on sumo folder
 
   // Enable logging from the ns2 helper
 //   LogComponentEnable ("Ns2MobilityHelper",LOG_LEVEL_DEBUG);
@@ -135,8 +135,8 @@ int main (int argc, char *argv[])
   //   }
 
   // Create Ns2MobilityHelper with the specified trace log file as parameter
-  // Ns2MobilityHelper ns2 = Ns2MobilityHelper ("/home/biplav/highway_50U.tcl");
-  Ns2MobilityHelper ns2 = Ns2MobilityHelper ("/home/biplav/mobility_files/low99-ct-unterstrass-1day.filt.7.adj.mob"); // 300 simulation seconds of 99 vehicles
+  Ns2MobilityHelper ns2 = Ns2MobilityHelper ("/home/biplav/highway_50U.tcl");
+  // Ns2MobilityHelper ns2 = Ns2MobilityHelper ("/home/biplav/mobility_files/low99-ct-unterstrass-1day.filt.7.adj.mob"); // 300 simulation seconds of 99 vehicles
   // Create all nodes.
   NodeContainer stas;
   stas.Create (nodeNum);
@@ -154,8 +154,18 @@ int main (int argc, char *argv[])
   {
     //   Simulator::Schedule (&LogLocation, i, pktInterval);
     //   Simulator::Schedule(Seconds (173->GetValue()), &LogLocation, i, LogInterval);
-      Simulator::ScheduleWithContext((NodeList::GetNode(i))->GetId (), Seconds (0), &LogLocation, i, LogInterval);
+      Simulator::ScheduleWithContext((NodeList::GetNode(i))->GetId (), Seconds (178), LogLocation, i, LogInterval);
   }                                                        // seconds above is when to start logging
+
+
+  /*
+
+
+
+
+
+
+  */
 //   while (tt>173000 && tt<(duration*1000))
 //   {
 //     for (i = 0; i<nodeNum; i++)

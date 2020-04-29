@@ -26,8 +26,11 @@
 #include "ns3/wave-helper.h"
 #include "ns3/mobility-model.h"
 #include "ns3/mobility-helper.h"
+#include <string>
 #include "ns3/loc_header.h"
-
+#include<iostream>
+#include<fstream>
+#include <cstdio>
 
 NS_LOG_COMPONENT_DEFINE ("BsmApplication");
 
@@ -47,11 +50,29 @@ BsmApplication::GetTypeId (void)
     .AddConstructor<BsmApplication> ()
     ;
 
-// std::string file_name ("VanetRouting_50U.txt"); //BIPLAV
-// freopen(file_name.c_str(),"a",stdout);
-// std::cout<<"PId TxId RxId RiskyVID GenTime RecTime Delay TxTruePos(X) TxHeadPos(X) TxTruePos(Y) TxHeadPos(Y) Error(X) Error(Y) Error(m) Tx_HeadVelX Tx_HeadVelY RecvPos(X) RecvPos(Y) RecvVel(X) RecvVel(Y)\n"<<std::endl;
+  std::string file_name ("BSM_50U.txt"); 
+  freopen(file_name.c_str(),"a",stdout);
+  std::cout<<"PId TxId RxId RiskyVID GenTime RecTime Delay TxTruePos(X) TxHeadPos(X) TxTruePos(Y) TxHeadPos(Y) Error(X) Error(Y) Error(m) Tx_HeadVelX Tx_HeadVelY RecvPos(X) RecvPos(Y) RecvVel(X) RecvVel(Y)\n"<<std::endl;
+
+  std::string file_name1 ("Trigger.txt"); 
+  freopen(file_name1.c_str(),"a",stderr);
 
 
+  // Time LogInterval = MilliSeconds(1);
+  // int i;
+  // for (i = 0; i<50; i++)
+  // { 
+  //   Ptr<Node> node = GetNode (i);
+  //   Simulator::ScheduleWithContext(( node->GetId() , Seconds (178), &BsmApplication::LogLocation, node, LogInterval);
+
+
+  /*
+  Simulator::ScheduleWithContext (recvSink->GetNode ()->GetId (),
+                                  txTime, &BsmApplication::GenerateWaveTraffic, this,
+                                  recvSink, m_wavePacketSize, m_numWavePackets, waveInterPacketInterval, m_nodeId);
+
+
+  */
   return tid;
 }
 
@@ -100,7 +121,7 @@ void BsmApplication::StartApplication () // Called at time specified by Start
   Time waveInterPacketInterval = m_waveInterval;
 
   // BSMs are not transmitted for the first second
-  Time startTime = Seconds (1.0);
+  Time startTime = Seconds (178.0); //biplav
   // total length of time transmitting WAVE packets
   Time totalTxTime = m_TotalSimTime - startTime;
   // total WAVE packets needing to be sent
@@ -454,7 +475,6 @@ void BsmApplication::HandleReceivedBsmPacket (Ptr<Node> txNode,
 
   std::cout<<MsgId<<" "<<SenderId<<" "<<RxId<<" "<<RiskyId<<" "<<(sqhd).GetMilliSeconds()<<" "<<(rcv).GetMilliSeconds()<<" "<<(total_delay).GetMilliSeconds()<<" "
   <<xx<<" "<<old_x<<" "<<yy<<" "<<old_y<<" "<<x_error<<" "<<y_error<<" "<<total_error<<" "<<xx1<<" "<<yy1<<" "<<xx2<<" "<<yy2<<" "<<xx3<<" "<<yy3<<"\n"<<std::endl;
-
   // BIPLAV ends
 
   m_waveBsmStats->IncRxPktCount ();
@@ -518,5 +538,22 @@ BsmApplication::GetNetDevice (int id)
 
   return device;
 }
+
+
+// void BsmApplication::LogLocation (Ptr<Node> node, Time LogInterval)
+
+// {
+//     // Ptr<Node> Current_Node = GetNode(i);
+//     Ptr<MobilityModel> mobility = node->GetObject<MobilityModel>();
+//     Vector pos = mobility->GetPosition (); // Get position
+//     Vector vel = mobility->GetVelocity (); // Get velocity
+//     // int ID = mobility->GetObject<ns3::Node>()->GetId(); // Get Node ID
+//     // while ((Simulator::Now())> Seconds(173))
+//     uint32_t i = node->GetId ();
+
+//     std::cerr<<Simulator::Now().GetInteger()<<" "<<i<<" "<<pos.x<<" "<< pos.y<<" "<< vel.x<<" "<< vel.y<<std::endl;
+//     // Simulator::Schedule(LogInterval, LogLocation, i, LogInterval);
+// }
+
 
 } // namespace ns3

@@ -181,6 +181,9 @@ private:
    * max transmit delay (default 10ms) */
   Time m_txMaxDelay;
   Time m_prevTxDelay; ///< previous transmit delay
+// public:
+//   void LogLocation (const Ptr<Node> node, const Time LogInterval);
+
 };
 
 } // namespace ns3
