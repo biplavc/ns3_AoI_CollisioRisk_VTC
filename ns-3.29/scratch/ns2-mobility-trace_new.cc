@@ -135,7 +135,7 @@ int main (int argc, char *argv[])
   //   }
 
   // Create Ns2MobilityHelper with the specified trace log file as parameter
-  Ns2MobilityHelper ns2 = Ns2MobilityHelper ("/home/biplav/highway_50U.tcl");
+  Ns2MobilityHelper ns2 = Ns2MobilityHelper ("/home/biplav/mobility_files/highway_50U.tcl");
   // Ns2MobilityHelper ns2 = Ns2MobilityHelper ("/home/biplav/mobility_files/low99-ct-unterstrass-1day.filt.7.adj.mob"); // 300 simulation seconds of 99 vehicles
   // Create all nodes.
   NodeContainer stas;

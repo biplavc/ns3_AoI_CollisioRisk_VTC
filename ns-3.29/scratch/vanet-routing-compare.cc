@@ -1534,9 +1534,9 @@ static ns3::GlobalValue g_phyMode ("VRCphyMode",
                                    ns3::StringValue ("OfdmRate6MbpsBW10MHz"),
                                    ns3::MakeStringChecker ());
 static ns3::GlobalValue g_traceFile ("VRCtraceFile",
-                                     "Mobility trace filename",
-                                     ns3::StringValue ("/home/biplav/mobility_files/circle_50U.tcl";), //biplav
-                                     ns3::MakeStringChecker ());
+                                      "Mobility trace filename",
+                                      ns3::StringValue ("./src/wave/examples/low99-ct-unterstrass-1day.filt.7.adj.mob"),
+                                      ns3::MakeStringChecker ());
 static ns3::GlobalValue g_logFile ("VRClogFile",
                                    "Log filename",
                                    ns3::StringValue ("low99-ct-unterstrass-1day.filt.7.adj.log"),
@@ -2390,8 +2390,8 @@ VanetRoutingExperiment::SetupScenario ()
     {
       // Realistic vehicular trace in 4.6 km x 3.0 km suburban Zurich
       // "low density, 99 total vehicles"
-      // m_traceFile = "src/wave/examples/low99-ct-unterstrass-1day.filt.7.adj.mob";
-      m_traceFile = "/home/biplav/mobility_files/circle_50U.tcl"; // biplav
+      m_traceFile = "src/wave/examples/low99-ct-unterstrass-1day.filt.7.adj.mob";
+      // m_traceFile = "/home/biplav/mobility_files/circle_50U.tcl"; // biplav
       m_logFile = "low99-ct-unterstrass-1day.filt.7.adj.log";
       m_mobility = 1;
       m_nNodes = 99;

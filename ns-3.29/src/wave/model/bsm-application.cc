@@ -26,11 +26,6 @@
 #include "ns3/wave-helper.h"
 #include "ns3/mobility-model.h"
 #include "ns3/mobility-helper.h"
-#include <string>
-#include "ns3/loc_header.h"
-#include<iostream>
-#include<fstream>
-#include <cstdio>
 
 NS_LOG_COMPONENT_DEFINE ("BsmApplication");
 
@@ -49,30 +44,6 @@ BsmApplication::GetTypeId (void)
     .SetGroupName ("Wave")
     .AddConstructor<BsmApplication> ()
     ;
-
-  std::string file_name ("BSM_50U.txt"); 
-  freopen(file_name.c_str(),"a",stdout);
-  std::cout<<"PId TxId RxId RiskyVID GenTime RecTime Delay TxTruePos(X) TxHeadPos(X) TxTruePos(Y) TxHeadPos(Y) Error(X) Error(Y) Error(m) Tx_HeadVelX Tx_HeadVelY RecvPos(X) RecvPos(Y) RecvVel(X) RecvVel(Y)\n"<<std::endl;
-
-  std::string file_name1 ("Trigger.txt"); 
-  freopen(file_name1.c_str(),"a",stderr);
-
-
-  // Time LogInterval = MilliSeconds(1);
-  // int i;
-  // for (i = 0; i<50; i++)
-  // { 
-  //   Ptr<Node> node = GetNode (i);
-  //   Simulator::ScheduleWithContext(( node->GetId() , Seconds (178), &BsmApplication::LogLocation, node, LogInterval);
-
-
-  /*
-  Simulator::ScheduleWithContext (recvSink->GetNode ()->GetId (),
-                                  txTime, &BsmApplication::GenerateWaveTraffic, this,
-                                  recvSink, m_wavePacketSize, m_numWavePackets, waveInterPacketInterval, m_nodeId);
-
-
-  */
   return tid;
 }
 
@@ -94,9 +65,6 @@ BsmApplication::BsmApplication ()
 {
   NS_LOG_FUNCTION (this);
 }
-
-static uint32_t MID = 0;
-
 
 BsmApplication::~BsmApplication ()
 {
@@ -121,7 +89,7 @@ void BsmApplication::StartApplication () // Called at time specified by Start
   Time waveInterPacketInterval = m_waveInterval;
 
   // BSMs are not transmitted for the first second
-  Time startTime = Seconds (178.0); //biplav
+  Time startTime = Seconds (1.0);
   // total length of time transmitting WAVE packets
   Time totalTxTime = m_TotalSimTime - startTime;
   // total WAVE packets needing to be sent
@@ -257,7 +225,7 @@ BsmApplication::GenerateWaveTraffic (Ptr<Socket> socket, uint32_t pktSize,
                                      uint32_t sendingNodeId)
 {
   NS_LOG_FUNCTION (this);
-  const uint32_t riskyNeighbor = 200; // remains constant here
+
   // more packets to send?
   if (pktCount > 0)
     {
@@ -270,50 +238,11 @@ BsmApplication::GenerateWaveTraffic (Ptr<Socket> socket, uint32_t pktSize,
       Ptr<MobilityModel> txPosition = txNode->GetObject<MobilityModel> ();
       NS_ASSERT (txPosition != 0);
 
-      int senderMoving = m_nodesMoving->at (txNodeId); //??
+      int senderMoving = m_nodesMoving->at (txNodeId);
       if (senderMoving != 0)
         {
           // send it!
-          // BIPLAV starts
-
-          Ptr<Packet> p = Create<Packet> (pktSize-(12+24*2+20)); //12 bytes seqts, and in loc_header-> 24*2 bytes for 2 double vectors of length 3 and 5*4 bytes IDs (MsgId , SenderId , IntendedRx, sign flags)
-          loc_header new_header;
-
-          Ptr<MobilityModel> mob3 = socket->GetNode()->GetObject<MobilityModel>(); //https://stackoverflow.com/questions/57290850/how-to-get-and-print-mobile-nodes-position-in-aodv-ns3
-          double x_old_pos = mob3->GetPosition().x; double y_old_pos = mob3->GetPosition().y; double z_old_pos = mob3->GetPosition().z;
-          double x_old_vel = mob3->GetVelocity().x; double y_old_vel = mob3->GetVelocity().y; double z_old_vel = mob3->GetVelocity().z;
-
-          // std::cout<<"At time "<<(Simulator::Now()).GetInteger()/100000<<" for node "<<socket->GetNode()->GetId()<<std::endl;
-          // std::cout<<"positions are "<<x_old_pos<<","<<y_old_pos<<","<<z_old_pos<<std::endl;
-          // std::cout<<"velocities are "<<x_old_vel<<","<<y_old_vel<<","<<z_old_vel<<std::endl;
-          int x_flag; int y_flag;
-          Vector vect1(x_old_pos, y_old_pos, z_old_pos);
-          
-          new_header.SetLocation(vect1);
-          Vector vect2(abs(x_old_vel), abs(y_old_vel), abs(z_old_vel));
-          if (x_old_vel < 0)
-            x_flag = 0;
-          else
-            x_flag = 1; 
-          if (y_old_vel < 0)
-            y_flag = 0;
-          else
-            y_flag = 1; 
-          new_header.SetSpeed(vect2);
-          new_header.SetSenderId(socket->GetNode()->GetId());
-          new_header.SetMsgId(++MID);
-
-          // std::cout<<"Sender is "<<socket->GetNode()->GetId()<<" and packet is generated from "<<x_old<<", "<<y_old<<", "<<z_old<<", "<<std::endl;
-          new_header.SetXvelID(x_flag);
-          new_header.SetYvelID(y_flag);
-          new_header.SetIntendedRx(riskyNeighbor); //BIPLAV , no check needed as it is 200 if no risky and 0-49 if some risky neighbor exists.
-          p->AddHeader(new_header);
-          SeqTsHeader seqTs;
-          seqTs.SetSeq (pktCount);
-          p->AddHeader (seqTs); //confirm if size of seqTs is 12 or not??
-          socket->Send(p);
-          // BIPLAV ends
-
+          socket->Send (Create<Packet> (pktSize));
           // count it
           m_waveBsmStats->IncTxPktCount ();
           m_waveBsmStats->IncTxByteCount (pktSize);
@@ -391,7 +320,7 @@ void BsmApplication::ReceiveWavePacket (Ptr<Socket> socket)
 
   Ptr<Packet> packet;
   Address senderAddr;
-  while ((packet = socket->RecvFrom (senderAddr))) //sender's address can be any sender
+  while ((packet = socket->RecvFrom (senderAddr)))
     {
       Ptr<Node> rxNode = socket->GetNode ();
 
@@ -404,78 +333,17 @@ void BsmApplication::ReceiveWavePacket (Ptr<Socket> socket)
               if (addr.GetIpv4 () == m_adhocTxInterfaces->GetAddress (i) )
                 {
                   Ptr<Node> txNode = GetNode (i);
-                  HandleReceivedBsmPacket (txNode, rxNode, packet, socket); //BIPLAV
+                  HandleReceivedBsmPacket (txNode, rxNode);
                 }
             }
         }
     }
 }
 
-// void BsmApplication::HandleReceivedBsmPacket (Ptr<Node> txNode,
-//                                               Ptr<Node> rxNode)
-
 void BsmApplication::HandleReceivedBsmPacket (Ptr<Node> txNode,
-                                              Ptr<Node> rxNode,
-                                              Ptr<Packet> packet,
-                                              Ptr<Socket> socket) //biplav
+                                              Ptr<Node> rxNode)
 {
   NS_LOG_FUNCTION (this);
-  // BIPLAV starts
-  // BIPLAV receiving starts
-  Time rcv;
-  Time sqhd;
-  Time total_delay;
-  SeqTsHeader seqTsx; 
-  packet->RemoveHeader(seqTsx);
-  rcv = (Simulator::Now()); // time of reception
-  sqhd = (seqTsx.GetTs()); //time stamp of when packet generated
-  // std::cerr<<"rcv = "<<rcv<<", sqhd = "<<sqhd<<std::endl;
-  total_delay = (rcv - sqhd); //total delay calculation
-  loc_header new_header;
-  packet->RemoveHeader(new_header);
-  Vector old_position = new_header.GetLocation();
-  Vector old_velocity = new_header.GetSpeed();
-  // std::cout<<"the speeds are: "<<old_velocity<<std::endl;
-  uint32_t SenderId = new_header.GetSenderId();
-  uint32_t MsgId = new_header.GetMsgId();
-  uint32_t x_flag = new_header.GetXvelID(); // 1 for positive and 0 for negative
-  uint32_t y_flag = new_header.GetYvelID(); // 1 for positive and 0 for negative
-  uint32_t RiskyId = new_header.GetIntendedRx();
-  double xx1 = old_velocity.x; double yy1 = old_velocity.y; //sender old velocities = old_velocity.x; double yy1 = old_velocity.y; //sender old velocities
-  if (x_flag == 0)
-    xx1 = (-1.000)*xx1;
-  if (y_flag == 0)
-    yy1 = (-1.000)*yy1;
-
-  uint32_t RxId = socket->GetNode()->GetId();
-
-  //BIPLAV
-
-  Ptr<Node> Sender_Node = GetNode (SenderId);
-  //std::cout<<"Packet "<< MsgId<<" sent by node " <<SenderId<< " and received by node "<< socket->GetNode()->GetId()<<" at "<<rcv<<", Packet generated at "<<sqhd<<" and overall delay for this packet is "<<total_delay<<std::endl;
-  double xx; double yy; //double zz; // will store positions
-
-  Ptr<MobilityModel> mob2 = socket->GetNode()->GetObject<MobilityModel>();
-  double xx2 = mob2->GetPosition().x; double yy2 = mob2->GetPosition().y; double xx3 = mob2->GetVelocity().x; double yy3 = mob2->GetVelocity().y; //receiver values
-  Ptr<MobilityModel> mob1 = Sender_Node->GetObject<MobilityModel>();
-  // IMPTT: the above command was giving trouble so in the next line, I am taking the current velocities
-  // double xx1 = mob1->GetVelocity().x; double yy1 = mob1->GetVelocity().y; // double z_sender_vel = mob1->GetVelocity().z; // velocity at reception instant, wrong approach
-
-  double old_x = old_position.x; double old_y = old_position.y; //sender old positions
-  xx = mob1->GetPosition().x; yy = mob1->GetPosition().y; ////sender current position
-  // total_error = sqrt(pow(x_error, 2)); // as velocity is only along x-axis
-  double x_error = abs(abs(xx)-abs(old_x)); double y_error = abs(abs(yy)-abs(old_y)); 
-  double total_error = sqrt(x_error*x_error + y_error*y_error);
-
-  // freopen(file_name.c_str(),"a",stdout); //https://stackoverflow.com/questions/21589353/cannot-convert-stdbasic-stringchar-to-const-char-for-argument-1-to-i
-            // PId          TxId        RxId       RiskyId               GenTime                   RecTime                          Delay   
-
-  // std::string loc_name ("VanetRouting_50U.txt"); 
-  // freopen(loc_name.c_str(),"a",stdout);
-
-  std::cout<<MsgId<<" "<<SenderId<<" "<<RxId<<" "<<RiskyId<<" "<<(sqhd).GetMilliSeconds()<<" "<<(rcv).GetMilliSeconds()<<" "<<(total_delay).GetMilliSeconds()<<" "
-  <<xx<<" "<<old_x<<" "<<yy<<" "<<old_y<<" "<<x_error<<" "<<y_error<<" "<<total_error<<" "<<xx1<<" "<<yy1<<" "<<xx2<<" "<<yy2<<" "<<xx3<<" "<<yy3<<"\n"<<std::endl;
-  // BIPLAV ends
 
   m_waveBsmStats->IncRxPktCount ();
 
@@ -509,7 +377,7 @@ BsmApplication::AssignStreams (int64_t streamIndex)
 {
   NS_LOG_FUNCTION (this);
 
-  NS_ASSERT (m_unirv);  // should be set by Setup() previously
+  NS_ASSERT (m_unirv);  // should be set by Setup() prevoiusly
   m_unirv->SetStream (streamIndex);
 
   return 1;
@@ -538,22 +406,5 @@ BsmApplication::GetNetDevice (int id)
 
   return device;
 }
-
-
-// void BsmApplication::LogLocation (Ptr<Node> node, Time LogInterval)
-
-// {
-//     // Ptr<Node> Current_Node = GetNode(i);
-//     Ptr<MobilityModel> mobility = node->GetObject<MobilityModel>();
-//     Vector pos = mobility->GetPosition (); // Get position
-//     Vector vel = mobility->GetVelocity (); // Get velocity
-//     // int ID = mobility->GetObject<ns3::Node>()->GetId(); // Get Node ID
-//     // while ((Simulator::Now())> Seconds(173))
-//     uint32_t i = node->GetId ();
-
-//     std::cerr<<Simulator::Now().GetInteger()<<" "<<i<<" "<<pos.x<<" "<< pos.y<<" "<< vel.x<<" "<< vel.y<<std::endl;
-//     // Simulator::Schedule(LogInterval, LogLocation, i, LogInterval);
-// }
-
 
 } // namespace ns3

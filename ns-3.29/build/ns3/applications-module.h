@@ -10,7 +10,6 @@
 #include "application-packet-probe.h"
 #include "bulk-send-application.h"
 #include "bulk-send-helper.h"
-#include "loc_header.h"
 #include "on-off-helper.h"
 #include "onoff-application.h"
 #include "packet-loss-counter.h"
