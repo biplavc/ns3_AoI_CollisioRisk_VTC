@@ -135,13 +135,8 @@ private:
    * \param rxNode the receiving node
    * \return none
    */
-  // void HandleReceivedBsmPacket (Ptr<Node> txNode, //BIPLAV
-  //                               Ptr<Node> rxNode);
-
-    void HandleReceivedBsmPacket (Ptr<Node> txNode,
-                                              Ptr<Node> rxNode,
-                                              Ptr<Packet> packet,
-                                              Ptr<Socket> socket);
+  void HandleReceivedBsmPacket (Ptr<Node> txNode,
+                                Ptr<Node> rxNode);
 
   /**
    * \brief Get the node for the desired id
@@ -181,9 +176,6 @@ private:
    * max transmit delay (default 10ms) */
   Time m_txMaxDelay;
   Time m_prevTxDelay; ///< previous transmit delay
-// public:
-//   void LogLocation (const Ptr<Node> node, const Time LogInterval);
-
 };
 
 } // namespace ns3
