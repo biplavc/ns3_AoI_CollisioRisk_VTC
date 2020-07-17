@@ -249,7 +249,7 @@ void ReceivePacket (Ptr<Socket> socket)
   Time rcv;
   Time sqhd;
   Time total_delay;
-  while ((packet = socket->Recv ()) && (Simulator::Now() > Seconds(183)))// start logging after 1865 seconds as in SUMO, 200 vehicles enter simulation after 173 seconds. For 50 vehicles, it is 173.
+  while ((packet = socket->Recv ()) && (Simulator::Now() > Seconds(80)))// start logging after 
   {
     total_received_packets++;
     SeqTsHeader seqTsx; 
@@ -390,13 +390,13 @@ int main (int argc, char *argv[])
   {
     Time interPacketInterval = Seconds (intervals[yyy]);
     // int arr[] = {20,50,120,200}; // denotes the number of vehicles
-    int arr[] = {50};
+    int arr[] = {50, 200};
     int mm = (sizeof(arr)/sizeof(*arr)); //number of elements, i.e. number of different density scenarios
     for (int m = 0; m < mm; m++) // loop for number of vehicles
     {
         int num_nodes = arr[m];
         // std::string queue_size[] = { "1p", "5p", "10p", "100p"};
-        std::string queue_size[] = { "1p", "100p"};
+        std::string queue_size[] = { "100p"};
         int zt =  (sizeof(queue_size)/sizeof(*queue_size));
         for (int uu = 0; uu < zt; uu++) // loop for queue size
 
@@ -484,7 +484,7 @@ int main (int argc, char *argv[])
           // ss_2 << int(intervals[yyy]);
           std::string str_2 = ss_2.str();
 
-          std::string file_name ("EQ_" + queue_here + "_" + str_2 + "Hz_" + str_1 + "U.txt"); 
+          std::string file_name (queue_here + "p_" + str_2 + "Hz_" + str_1 + "U.txt"); 
           // std::cout<<"PacketId SenderId ReceiverId TotalError(m) GenerationTime(ns) ReceivedTime(ns) Delay(ns) "<<std::endl;
           freopen(file_name.c_str(),"a",stdout);
           std::cout<<"PId TxId RxId GenTime RecTime Delay TxTruePos(X) TxHeadPos(X) TxTruePos(Y) TxHeadPos(Y) Error(X) Error(Y) Error(m) Tx_HeadVelX Tx_HeadVelY RecvPos(X) RecvPos(Y) RecvVel(X) RecvVel(Y)\n"<<std::endl;
@@ -500,8 +500,13 @@ int main (int argc, char *argv[])
           // // ss_2 << int(intervals[yyy]);
           // std::string str_4 = ss_4.str();
 
+          /*
+
           std::string loc_name ("Drop_" + queue_here + "_" + str_2 + "Hz_" + str_1 + "U.txt"); 
           freopen(loc_name.c_str(),"a",stderr);
+
+          */
+
           // std::cerr<<"ID InitialX InitialY InitialZ "<<std::endl;
 
         //   for(unsigned int i = 0; i < c.GetN(); i++)
@@ -530,7 +535,7 @@ int main (int argc, char *argv[])
             //   // std::cerr<<i<<" "<<posm.x<<" "<<posm.y<<" "<<posm.z<<std::endl;
 
 
-          Ns2MobilityHelper ns2 = Ns2MobilityHelper ( "/home/biplav/mobility_files/circle_50U.tcl");
+          Ns2MobilityHelper ns2 = Ns2MobilityHelper ( "/home/biplav/mobility_files/sigma0/circle_sigma0_50U.tcl");
           ns2.Install (); // configure movements for each node, while reading trace file
         // initially assume all nodes are not moving
           // WaveBsmHelper::GetNodesMoving ().resize (num_nodes, 0); // need for this ??

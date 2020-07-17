@@ -93,7 +93,7 @@ int main (int argc, char *argv[])
 {
 
     // open log file for output
-  std::string loc_name ("Loc_Circle_300U_600s.txt"); 
+  std::string loc_name ("Loc_Circle_400U_600s.txt"); 
   freopen(loc_name.c_str(),"a",stdout);
   std::cout<<"Time VID Pos(X) Pos(Y) Vel(X) Vel(Y)\n"<<std::endl;
   std::string traceFile;
@@ -104,7 +104,7 @@ int main (int argc, char *argv[])
 
   ns3::Time::SetResolution (Time::MS);
 
-  int nodeNum=300;
+  int nodeNum=400;
   double duration=601; // see important.txt on sumo folder
 
   // Enable logging from the ns2 helper
@@ -135,7 +135,7 @@ int main (int argc, char *argv[])
   //   }
 
   // Create Ns2MobilityHelper with the specified trace log file as parameter
-  Ns2MobilityHelper ns2 = Ns2MobilityHelper ("/home/biplav/mobility_files/circle_300U.tcl");
+  Ns2MobilityHelper ns2 = Ns2MobilityHelper ("/home/biplav/mobility_files/circle_400U.tcl");
   // Ns2MobilityHelper ns2 = Ns2MobilityHelper ("/home/biplav/mobility_files/low99-ct-unterstrass-1day.filt.7.adj.mob"); // 300 simulation seconds of 99 vehicles
   // Create all nodes.
   NodeContainer stas;
